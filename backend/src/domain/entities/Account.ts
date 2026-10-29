@@ -1,3 +1,4 @@
+import { ValidationError } from '../errors/DomainErrors';
 
 export interface AccountProps {
   id: string;
@@ -7,16 +8,14 @@ export interface AccountProps {
 }
 
 export class Account {
-  private constructor(
-    private readonly props: AccountProps,
-  ) {}
+  private constructor(private readonly props: AccountProps) {}
 
   // Create a new account with an initial balance of zero
   static create(name: string): Account {
     const normalizedName = name.trim();
 
     if (!normalizedName) {
-      throw new Error('Account name is required');
+      throw new ValidationError('Account name is required.');
     }
 
     return new Account({
