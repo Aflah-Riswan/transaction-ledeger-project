@@ -172,7 +172,18 @@ export function App() {
       return;
     }
 
-    const amountNum = Number(txAmount);
+    const trimmedAmount = txAmount.trim();
+
+    // Validate that amount is a valid positive integer without leading zeros (rejects "099", "00", "0")
+    if (!/^[1-9]\d*$/.test(trimmedAmount)) {
+      setAlert({
+        type: 'error',
+        message: 'Please enter a valid number (cannot start with 0 or have leading zeros).',
+      });
+      return;
+    }
+
+    const amountNum = Number(trimmedAmount);
     if (!Number.isSafeInteger(amountNum) || amountNum <= 0) {
       setAlert({ type: 'error', message: 'Amount must be a positive integer greater than zero.' });
       return;

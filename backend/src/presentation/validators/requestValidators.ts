@@ -25,6 +25,14 @@ export function validateTransactionType(type: unknown): TransactionType {
 }
 
 export function validateAmount(amount: unknown): number {
+  if (typeof amount === 'string') {
+    // Disallow numbers with leading zeros (e.g. "099") or non-integer formats
+    if (!/^[1-9]\d*$/.test(amount.trim())) {
+      throw new ValidationError('Amount must be greater than zero.');
+    }
+    amount = Number(amount);
+  }
+
   if (
     typeof amount !== 'number' ||
     !Number.isSafeInteger(amount) ||
