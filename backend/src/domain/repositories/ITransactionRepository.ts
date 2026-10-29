@@ -18,7 +18,7 @@ export interface TransactionHistoryResult {
   totalPages: number;
 }
 
-export interface TransactionRepository {
+export interface ITransactionRepository {
   create(transaction: Transaction): Promise<Transaction>;
 
   findByReference(
