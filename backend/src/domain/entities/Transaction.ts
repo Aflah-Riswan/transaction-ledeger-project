@@ -1,3 +1,4 @@
+import { ValidationError } from '../errors/DomainErrors';
 
 export type TransactionType = 'credit' | 'debit';
 
@@ -11,43 +12,45 @@ export interface TransactionProps {
   createdAt: Date;
 }
 
+export interface CreateTransactionProps {
+  accountId: string;
+  type: TransactionType;
+  amount: number;
+  referenceId: string;
+  description?: string;
+}
+
 export class Transaction {
-  private constructor(
-    private readonly props: TransactionProps,
-  ) {}
+  private constructor(private readonly props: TransactionProps) {}
 
-  static create(
-    data: Omit<TransactionProps, 'id' | 'createdAt'>,
-  ): Transaction {
-    if (!data.accountId.trim()) {
-      throw new Error('Account ID is required');
+  static create(data: CreateTransactionProps): Transaction {
+    const normalizedAccountId = (data.accountId || '').trim();
+    if (!normalizedAccountId) {
+      throw new ValidationError('Account ID is required.');
     }
 
-    if (
-      data.type !== 'credit' &&
-      data.type !== 'debit'
-    ) {
-      throw new Error('Transaction type must be credit or debit');
+    if (data.type !== 'credit' && data.type !== 'debit') {
+      throw new ValidationError('Transaction type must be credit or debit.');
     }
 
-    if (
-      !Number.isSafeInteger(data.amount) ||
-      data.amount <= 0
-    ) {
-      throw new Error('Amount must be a positive integer in paise');
+    if (!Number.isSafeInteger(data.amount) || data.amount <= 0) {
+      throw new ValidationError('Amount must be greater than zero.');
     }
 
-    if (!data.referenceId.trim()) {
-      throw new Error('Reference ID is required');
+    const normalizedReferenceId = (data.referenceId || '').trim();
+    if (!normalizedReferenceId) {
+      throw new ValidationError('Reference ID is required.');
     }
 
-    if (!data.description.trim()) {
-      throw new Error('Description is required');
-    }
+    const normalizedDescription = (data.description || '').trim();
 
     return new Transaction({
-      ...data,
       id: '',
+      accountId: normalizedAccountId,
+      type: data.type,
+      amount: data.amount,
+      description: normalizedDescription,
+      referenceId: normalizedReferenceId,
       createdAt: new Date(),
     });
   }
