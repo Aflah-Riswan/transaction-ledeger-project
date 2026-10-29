@@ -6,6 +6,7 @@ import { MongoAccountRepository } from './infrastructure/database/repositories/M
 import { MongoTransactionRepository } from './infrastructure/database/repositories/MongoTransactionRepository';
 import { CreateAccount } from './application/use-cases/CreateAccount';
 import { GetAccountBalance } from './application/use-cases/GetAccountBalance';
+import { GetAllAccounts } from './application/use-cases/GetAllAccounts';
 import { AddTransaction } from './application/use-cases/AddTransaction';
 import { GetTransactionHistory } from './application/use-cases/GetTransactionHistory';
 import { AccountController } from './presentation/controllers/AccountController';
@@ -28,6 +29,7 @@ export function createApp(dependencies?: AppDependencies): Express {
 
   const createAccountUseCase = new CreateAccount(accountRepository);
   const getAccountBalanceUseCase = new GetAccountBalance(accountRepository);
+  const getAllAccountsUseCase = new GetAllAccounts(accountRepository);
   const addTransactionUseCase = new AddTransaction(
     accountRepository,
     transactionRepository,
@@ -40,6 +42,7 @@ export function createApp(dependencies?: AppDependencies): Express {
   const accountController = new AccountController(
     createAccountUseCase,
     getAccountBalanceUseCase,
+    getAllAccountsUseCase,
   );
   const transactionController = new TransactionController(
     addTransactionUseCase,

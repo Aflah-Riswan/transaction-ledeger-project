@@ -9,6 +9,7 @@ export function createAccountRoutes(
   const router = Router();
 
   // Account endpoints
+  router.get('/', accountController.getAllAccounts);
   router.post('/', accountController.createAccount);
   router.get('/:accountId/balance', accountController.getBalance);
 

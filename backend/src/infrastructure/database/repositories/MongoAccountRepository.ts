@@ -37,6 +37,18 @@ export class MongoAccountRepository implements IAccountRepository {
     });
   }
 
+  async findAll(): Promise<Account[]> {
+    const accounts = await AccountModel.find().sort({ createdAt: -1 }).exec();
+    return accounts.map((account) =>
+      Account.fromData({
+        id: account._id.toString(),
+        name: account.name,
+        balance: account.balance,
+        createdAt: account.createdAt,
+      }),
+    );
+  }
+
   async updateBalance(id: string, amountDelta: number): Promise<Account | null> {
     if (!Types.ObjectId.isValid(id)) {
       return null;

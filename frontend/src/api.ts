@@ -30,6 +30,10 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  async getAccounts(): Promise<Account[]> {
+    return request<Account[]>('/accounts');
+  },
+
   async createAccount(name: string): Promise<Account> {
     return request<Account>('/accounts', {
       method: 'POST',

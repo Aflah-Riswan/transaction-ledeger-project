@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { CreateAccount } from '../../application/use-cases/CreateAccount';
 import { GetAccountBalance } from '../../application/use-cases/GetAccountBalance';
+import { GetAllAccounts } from '../../application/use-cases/GetAllAccounts';
 import {
   validateAccountId,
   validateAccountName,
@@ -10,6 +11,7 @@ export class AccountController {
   constructor(
     private readonly createAccountUseCase: CreateAccount,
     private readonly getAccountBalanceUseCase: GetAccountBalance,
+    private readonly getAllAccountsUseCase?: GetAllAccounts,
   ) {}
 
   createAccount = async (
@@ -54,6 +56,32 @@ export class AccountController {
           accountId: result.accountId,
           balance: result.balance,
         },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAllAccounts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      if (!this.getAllAccountsUseCase) {
+        res.status(200).json({ success: true, data: [] });
+        return;
+      }
+      const accounts = await this.getAllAccountsUseCase.execute();
+      res.status(200).json({
+        success: true,
+        data: accounts.map((account) => ({
+          id: account.id,
+          name: account.name,
+          balance: account.balance,
+          created_at: account.createdAt,
+          createdAt: account.createdAt,
+        })),
       });
     } catch (error) {
       next(error);
